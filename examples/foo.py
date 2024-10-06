@@ -12,6 +12,7 @@ def main():
         t += dt
 
     buffer.write("foo.mid")
+    symbolism.play(symbolism.get_output_names()[0], "foo.mid")
 
 
 if __name__ == "__main__":

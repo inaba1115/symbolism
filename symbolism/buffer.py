@@ -21,9 +21,6 @@ class Buffer:
     def add(self, t: float, note: Note) -> None:
         self.notes.append((t, note))
 
-    def play(self) -> None:
-        raise NotImplementedError
-
     def write(self, fname: str, bpm: float = 120) -> None:
         outfile = mido.MidiFile()
         track = mido.MidiTrack()
