@@ -1,9 +1,10 @@
+import time
 from dataclasses import dataclass, field
 
 import mido  # type: ignore
 
 from .note import Note
-from .utils import sec_to_tick
+from .utils import sec_to_tick, tick_to_sec
 
 
 @dataclass
@@ -21,11 +22,9 @@ class Buffer:
     def add(self, t: float, note: Note) -> None:
         self.notes.append((t, note))
 
-    def write(self, fname: str, bpm: float = 120) -> None:
-        outfile = mido.MidiFile()
+    def __make_track(self, bpm: float = 120) -> mido.MidiTrack:
         track = mido.MidiTrack()
         track.append(mido.MetaMessage("set_tempo", tempo=mido.bpm2tempo(bpm)))
-        outfile.tracks.append(track)
 
         midi_events: list[MidiEvent] = []
         for t, note in self.notes:
@@ -52,5 +51,26 @@ class Buffer:
                     rc[e.midi_number] -= 1
                     continue
             t = e.tick
+        return track
 
+    def write(self, fname: str, bpm: float = 120) -> None:
+        outfile = mido.MidiFile()
+        track = self.__make_track(bpm)
+        outfile.tracks.append(track)
         outfile.save(fname)
+
+    def play(self, port: str) -> None:
+        with mido.open_output(port) as outport:
+            track = self.__make_track()
+
+            now = time.time()
+            for msg in track:
+                if isinstance(msg, mido.MetaMessage):
+                    continue
+
+                now += tick_to_sec(msg.time)
+                dt = now - time.time()
+                if dt > 0:
+                    time.sleep(dt)
+
+                outport.send(msg)

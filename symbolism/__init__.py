@@ -2,7 +2,7 @@ from .buffer import Buffer
 from .note import Note
 from .scale import Scale
 from .scales import scales
-from .utils import get_output_names, play
+from .utils import get_output_names
 
 __all__ = [
     "Buffer",
@@ -10,5 +10,4 @@ __all__ = [
     "Scale",
     "scales",
     "get_output_names",
-    "play",
 ]
