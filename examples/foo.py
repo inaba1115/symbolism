@@ -20,7 +20,7 @@ def main():
     t = 0
     for notes, dt in score:
         for note in notes:
-            buffer.add(t, symbolism.Note(scale.map(note) + 60, 100, dt))
+            buffer.add_note(scale.map(note) + 60, 100, t, dt)
         t += dt
 
     # buffer.write("foo.mid")
