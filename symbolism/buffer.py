@@ -33,10 +33,13 @@ class Buffer:
             outfile.tracks.append(track)
             outfile.save(f"{channel}.{fname}")
 
-    def play(self, port: str) -> None:
-        with mido.open_output(port) as outport:
-            track = make_track(self.notes, 120)
+    def play(self, port: str, start_sec: float = 0) -> None:
+        notes = [note for note in self.notes if note.start_sec >= start_sec]
+        for note in notes:
+            note.start_sec -= start_sec
+        track = make_track(notes, 120)
 
+        with mido.open_output(port) as outport:
             now = time.time()
             for msg in track:
                 if isinstance(msg, mido.MetaMessage):
